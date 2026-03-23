@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Automation Engineer — Hire on Upwork</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0c0d0f;
+    --bg2:      #141519;
+    --bg3:      #1c1d23;
+    --border:   rgba(255,255,255,0.07);
+    --border2:  rgba(255,255,255,0.13);
+    --text:     #e8e6e0;
+    --text2:    #9a9790;
+    --text3:    #5a5855;
+    --amber:    #EF9F27;
+    --amber2:   #FAC775;
+    --amber-dim:  rgba(239,159,39,0.10);
+    --amber-dim2: rgba(239,159,39,0.05);
+    --teal:     #1D9E75;
+    --teal2:    #5DCAA5;
+    --teal-dim: rgba(29,158,117,0.09);
+    --blue:     #378ADD;
+    --blue2:    #85B7EB;
+    --blue-dim: rgba(55,138,221,0.09);
+    --mono: 'DM Mono', monospace;
+    --serif: 'Instrument Serif', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.013) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.013) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* HEADER */
+  header { border-bottom: 1px solid var(--border); padding: 18px 0; }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--mono); font-size: 13px; color: var(--text2); }
+  .logo b { color: var(--amber); font-weight: 500; }
+  .btn-upwork {
+    font-family: var(--mono); font-size: 12px; color: var(--amber2);
+    background: var(--amber-dim); border: 1px solid rgba(239,159,39,0.2);
+    border-radius: 6px; padding: 7px 16px; text-decoration: none;
+    letter-spacing: .03em; transition: background .2s, border-color .2s;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-upwork:hover { background: rgba(239,159,39,0.16); border-color: rgba(239,159,39,0.35); }
+
+  /* HERO */
+  .hero { padding: 88px 0 72px; animation: fadeUp .6s ease both; }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--serif); font-size: 54px; font-weight: 400;
+    line-height: 1.06; letter-spacing: -.02em; margin-bottom: 28px; max-width: 640px;
+  }
+  h1 em { font-style: italic; color: var(--amber2); }
+  .hero-sub { font-size: 16px; color: var(--text2); line-height: 1.7; max-width: 520px; margin-bottom: 40px; }
+  .hero-ctas { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: var(--mono); font-size: 13px; background: var(--amber);
+    color: #1a1200; border: none; border-radius: 8px; padding: 12px 24px;
+    text-decoration: none; font-weight: 500; letter-spacing: .02em;
+    transition: opacity .2s, transform .15s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-secondary {
+    font-family: var(--mono); font-size: 12px; color: var(--text2);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color .2s;
+  }
+  .btn-secondary:hover { color: var(--text); }
+
+  /* TRUST BAR */
+  .trust-bar {
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 18px 0; margin-bottom: 80px; animation: fadeUp .6s .1s ease both;
+  }
+  .trust-inner { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 10px; }
+  .trust-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+  .trust-icon.green { background: var(--teal-dim); }
+  .trust-icon.amber { background: var(--amber-dim); }
+  .trust-icon.blue  { background: var(--blue-dim); }
+  .trust-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
+  .trust-text strong { color: var(--text); font-weight: 500; display: block; font-size: 14px; }
+
+  /* SECTION TITLE */
+  .section-title { margin-bottom: 28px; }
+  .section-label {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  h2 { font-family: var(--serif); font-size: 36px; font-weight: 400; letter-spacing: -.015em; line-height: 1.15; }
+  h2 em { font-style: italic; color: var(--text2); }
+
+  /* PROBLEM CARDS */
+  .problems { display: flex; flex-direction: column; gap: 2px; margin-bottom: 88px; }
+  .prob-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; transition: border-color .2s, transform .2s;
+  }
+  .prob-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .prob-card.c1 { --ac: var(--teal);  --ac2: var(--teal2);  --ad: var(--teal-dim); }
+  .prob-card.c2 { --ac: var(--amber); --ac2: var(--amber2); --ad: var(--amber-dim); }
+  .prob-card.c3 { --ac: var(--blue);  --ac2: var(--blue2);  --ad: var(--blue-dim); }
+  .prob-card:nth-child(1) { animation: fadeUp .5s .15s ease both; }
+  .prob-card:nth-child(2) { animation: fadeUp .5s .25s ease both; }
+  .prob-card:nth-child(3) { animation: fadeUp .5s .35s ease both; }
+
+  .prob-inner { display: grid; grid-template-columns: 1fr 1fr; }
+  .prob-left {
+    padding: 32px 36px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
+  }
+  .prob-tag {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ac2); background: var(--ad); display: inline-block;
+    padding: 4px 10px; border-radius: 4px; width: fit-content; margin-bottom: 14px;
+  }
+  .prob-problem { font-size: 12px; font-family: var(--mono); color: var(--text3); letter-spacing: .02em; margin-bottom: 6px; }
+  .prob-title {
+    font-family: var(--serif); font-size: 24px; font-weight: 400;
+    line-height: 1.2; letter-spacing: -.01em; color: var(--text); margin-bottom: 14px;
+  }
+  .prob-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .prob-cta { display: flex; align-items: center; gap: 12px; }
+  .btn-demo {
+    font-family: var(--mono); font-size: 12px; color: var(--ac2); background: var(--ad);
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 8px 16px;
+    text-decoration: none; letter-spacing: .03em; transition: background .2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-demo:hover { background: rgba(255,255,255,0.07); }
+  .btn-demo .arr { transition: transform .2s; }
+  .btn-demo:hover .arr { transform: translate(2px,-2px); }
+  .btn-gh { font-family: var(--mono); font-size: 11px; color: var(--text3); text-decoration: none; transition: color .2s; }
+  .btn-gh:hover { color: var(--text2); }
+
+  /* RIGHT PANEL */
+  .prob-right { padding: 28px 30px; display: flex; flex-direction: column; gap: 20px; }
+  .panel-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); }
+  .before-after { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .ba-row { background: var(--bg3); border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
+  .ba-row.after { border-color: rgba(255,255,255,0.1); background: var(--bg2); }
+  .ba-label { font-family: var(--mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 5px; }
+  .ba-label.before-lbl { color: var(--text3); }
+  .ba-label.after-lbl  { color: var(--ac2); }
+  .ba-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .ba-row.after .ba-text { color: var(--text); }
+  .result-pill {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px;
+    color: var(--ac2); background: var(--ad); border-radius: 20px; padding: 5px 12px; margin-top: 4px;
+  }
+
+  /* PROOF */
+  .proof-section { margin-bottom: 88px; }
+  .proof-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+    padding: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+  }
+  .proof-quote {
+    font-family: var(--serif); font-size: 22px; font-weight: 400;
+    line-height: 1.45; color: var(--text); letter-spacing: -.01em; margin-bottom: 20px;
+  }
+  .proof-quote em { font-style: italic; color: var(--amber2); }
+  .proof-source { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: .04em; }
+  .proof-source span { color: var(--text2); }
+  .proof-metrics { display: flex; flex-direction: column; gap: 2px; }
+  .metric-row {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .metric-label { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: .04em; }
+  .metric-val { font-family: var(--mono); font-size: 14px; color: var(--text); font-weight: 500; }
+  .metric-val.hi { color: var(--teal2); }
+  .metric-val.am { color: var(--amber); }
+
+  /* CTA */
+  .cta-section { margin-bottom: 88px; }
+  .cta-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 20px;
+    padding: 52px 48px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-card::before {
+    content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(239,159,39,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-card h2 { font-size: 40px; margin-bottom: 14px; position: relative; }
+  .cta-sub { font-size: 15px; color: var(--text2); margin-bottom: 36px; position: relative; }
+  .cta-buttons { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; position: relative; }
+  .btn-big {
+    font-family: var(--mono); font-size: 14px; background: var(--amber); color: #1a1200;
+    border: none; border-radius: 10px; padding: 14px 32px; text-decoration: none;
+    font-weight: 500; letter-spacing: .02em; transition: opacity .2s, transform .15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-big:hover { opacity: .9; transform: translateY(-1px); }
+  .cta-note { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 18px; position: relative; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); padding: 28px 0; }
+  .foot-inner { display: flex; justify-content: space-between; align-items: center; }
+  .foot-note { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+  .foot-links { display: flex; gap: 20px; }
+  .foot-links a { font-family: var(--mono); font-size: 11px; color: var(--text3); text-decoration: none; transition: color .2s; }
+  .foot-links a:hover { color: var(--amber); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 680px) {
+    h1 { font-size: 38px; }
+    .prob-inner { grid-template-columns: 1fr; }
+    .prob-left { border-right: none; border-bottom: 1px solid var(--border); }
+    .proof-card { grid-template-columns: 1fr; gap: 28px; }
+    .cta-card { padding: 36px 24px; }
+    .trust-inner { gap: 20px; }
+    .wrap { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="header-inner">
+      <div class="logo">AI <b>Automation</b> Engineer</div>
+      <a href="https://www.upwork.com" target="_blank" class="btn-upwork">Hire me on Upwork ↗</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">Available for new projects</div>
+    <h1>Your business runs on<br><em>manual work</em> that<br>AI should handle</h1>
+    <p class="hero-sub">
+      I build production AI systems that automate document processing, answer your team's questions instantly, and qualify leads while you sleep. Not demos — working systems delivered in 1–2 weeks.
+    </p>
+    <div class="hero-ctas">
+      <a href="#demos" class="btn-primary">See it working ↓</a>
+      <a href="https://www.upwork.com" target="_blank" class="btn-secondary">My Upwork profile →</a>
+    </div>
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="wrap">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <div class="trust-icon green">
+          <svg width="14" height="14" fill="none" stroke="#5DCAA5" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="trust-text">
+          <strong>Senior backend engineer</strong>
+          Go · Node.js · AWS — 7+ years
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon amber">
+          <svg width="14" height="14" fill="none" stroke="#EF9F27" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="trust-text">
+          <strong>Lamoda — 30M users</strong>
+          20M+ events/day at scale
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon blue">
+          <svg width="14" height="14" fill="none" stroke="#85B7EB" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="trust-text">
+          <strong>Delivery in 1–2 weeks</strong>
+          Fixed price or hourly
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="demos">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="section-label">What I build</div>
+      <h2>Three problems.<br><em>All solved.</em></h2>
+    </div>
+
+    <div class="problems">
+
+      <div class="prob-card c1">
+        <div class="prob-inner">
+          <div class="prob-left">
+            <div>
+              <div class="prob-tag">Document processing</div>
+              <p class="prob-problem">The problem</p>
+              <h3 class="prob-title">Your team manually reads every PDF, invoice, and contract</h3>
+              <p class="prob-desc">
+                An email arrives with a PDF. Someone opens it, copies numbers into a spreadsheet, forwards the results. Hours later. With mistakes. I replace that entire loop with an AI agent that does it in seconds — and flags anything it's unsure about for human review.
+              </p>
+            </div>
+            <div class="prob-cta">
+              <a href="#" class="btn-demo">Live demo <span class="arr">↗</span></a>
+              <a href="https://github.com" target="_blank" class="btn-gh">GitHub →</a>
+            </div>
+          </div>
+          <div class="prob-right">
+            <div class="panel-label">Before / After</div>
+            <div class="before-after">
+              <div class="ba-row">
+                <div class="ba-label before-lbl">Before</div>
+                <div class="ba-text">Employee opens PDF, manually extracts data, enters into system. 15–45 min per document. ~5% error rate.</div>
+              </div>
+              <div class="ba-row after">
+                <div class="ba-label after-lbl">After</div>
+                <div class="ba-text">Email arrives → extracted in seconds → written to your system → Slack notification. Human only reviews flagged items.</div>
+                <div class="result-pill">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Processing time cut by ~95%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prob-card c2">
+        <div class="prob-inner">
+          <div class="prob-left">
+            <div>
+              <div class="prob-tag">Internal knowledge</div>
+              <p class="prob-problem">The problem</p>
+              <h3 class="prob-title">Your team asks the same questions over and over</h3>
+              <p class="prob-desc">
+                "Where's that policy doc?" "What were the specs for client X?" The answer is buried in Notion, Google Drive, or a PDF nobody can find. I build an AI assistant trained on your own documents that answers instantly and always shows the source.
+              </p>
+            </div>
+            <div class="prob-cta">
+              <a href="#" class="btn-demo">Live demo <span class="arr">↗</span></a>
+              <a href="https://github.com" target="_blank" class="btn-gh">GitHub →</a>
+            </div>
+          </div>
+          <div class="prob-right">
+            <div class="panel-label">Before / After</div>
+            <div class="before-after">
+              <div class="ba-row">
+                <div class="ba-label before-lbl">Before</div>
+                <div class="ba-text">Team member asks in Slack, waits for a colleague, gets a link to the wrong doc. Or just guesses.</div>
+              </div>
+              <div class="ba-row after">
+                <div class="ba-label after-lbl">After</div>
+                <div class="ba-text">Ask the AI in Slack or a chat UI. Searches your documents, answers in seconds, shows the exact source.</div>
+                <div class="result-pill">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Works with Notion, Drive, PDFs
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="prob-card c3">
+        <div class="prob-inner">
+          <div class="prob-left">
+            <div>
+              <div class="prob-tag">Lead qualification</div>
+              <p class="prob-problem">The problem</p>
+              <h3 class="prob-title">Good leads go cold while you're busy with bad ones</h3>
+              <p class="prob-desc">
+                A lead messages on WhatsApp or fills a form. Your team responds hours later — if at all. By then they've moved on. I build an AI agent that responds in under a minute, scores the lead, updates your CRM, and only pings your team for the hot ones.
+              </p>
+            </div>
+            <div class="prob-cta">
+              <a href="#" class="btn-demo">Live demo <span class="arr">↗</span></a>
+              <a href="https://github.com" target="_blank" class="btn-gh">GitHub →</a>
+            </div>
+          </div>
+          <div class="prob-right">
+            <div class="panel-label">Before / After</div>
+            <div class="before-after">
+              <div class="ba-row">
+                <div class="ba-label before-lbl">Before</div>
+                <div class="ba-text">Lead submits form. Someone checks it 3 hours later. Manual reply. Forgets to update HubSpot. Hot lead goes cold.</div>
+              </div>
+              <div class="ba-row after">
+                <div class="ba-label after-lbl">After</div>
+                <div class="ba-text">Lead arrives → AI responds in &lt;60s → scored + logged in CRM → team gets a Slack ping only for hot leads.</div>
+                <div class="result-pill">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Works with WhatsApp, HubSpot, Airtable
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROOF -->
+    <div class="proof-section">
+      <div class="proof-card">
+        <div>
+          <p class="proof-quote">
+            "The same engineering discipline I used to process <em>20 million events a day at Lamoda</em> — now applied to your business."
+          </p>
+          <p class="proof-source">Background · <span>Lamoda, Eastern Europe's largest fashion e-commerce · 30M users</span></p>
+        </div>
+        <div class="proof-metrics">
+          <div class="metric-row">
+            <span class="metric-label">Events/day at Lamoda</span>
+            <span class="metric-val hi">20,000,000+</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Engineering experience</span>
+            <span class="metric-val">7+ years</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Core stack</span>
+            <span class="metric-val">Go · Node.js · AWS</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Ready to deploy</span>
+            <span class="metric-val am">3 live templates</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM CTA -->
+    <div class="cta-section">
+      <div class="cta-card">
+        <h2>Does one of these sound<br>like <em>your</em> problem?</h2>
+        <p class="cta-sub">Send me a message on Upwork. Describe what you're dealing with.<br>I'll respond within a few hours with a concrete plan.</p>
+        <div class="cta-buttons">
+          <a href="https://www.upwork.com" target="_blank" class="btn-big">Message me on Upwork ↗</a>
+        </div>
+        <p class="cta-note">Typical project: 1–2 weeks · $1,500–$5,000 · Fixed price or hourly</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <span class="foot-note">AWS · Node.js · Go</span>
+      <nav class="foot-links">
+        <a href="https://www.upwork.com" target="_blank">Upwork</a>
+        <a href="https://github.com" target="_blank">GitHub</a>
+        <a href="/cdn-cgi/l/email-protection#add4c2d8dfedc8c0ccc4c183cec2c0">Email</a>
+      </nav>
+    </div>
