@@ -83,7 +83,7 @@ const siteConfig = {
         title: "Your team asks the same questions over and over",
         description:
           "\"Where's that policy doc?\" \"What were the specs for client X?\" The answer is buried in Notion, Google Drive, or a PDF nobody can find. I build an AI assistant trained on your own documents that answers instantly and always shows the source.",
-        demoUrl: "https://example.com/internal-knowledge-demo",
+        demoUrl: "/demos/rag-assistant",
         githubUrl: "https://github.com/your-username/internal-knowledge-demo",
         beforeText:
           "Team member asks in Slack, waits for a colleague, gets a link to the wrong doc. Or just guesses.",

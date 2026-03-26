@@ -30,6 +30,8 @@ export function ProblemCard({
   resultText,
   labels,
 }: ProblemCardProps) {
+  const isExternalDemo = /^https?:\/\//.test(demoUrl);
+
   return (
     <div className={`prob-card ${colorVariant}`}>
       <div className="prob-inner">
@@ -43,11 +45,11 @@ export function ProblemCard({
           <div className="prob-cta">
             <a
               href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={isExternalDemo ? "_blank" : undefined}
+              rel={isExternalDemo ? "noopener noreferrer" : undefined}
               className="btn-demo"
             >
-              {labels.demo} <span className="arr">↗</span>
+              {labels.demo} <span className="arr">{isExternalDemo ? "↗" : "→"}</span>
             </a>
             <a
               href={githubUrl}
