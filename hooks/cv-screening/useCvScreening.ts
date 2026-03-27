@@ -1,5 +1,6 @@
 "use client";
 
+import type { Dispatch } from "react";
 import { useEffect, useReducer, useState } from "react";
 
 import { analyzeCv } from "@/lib/cv-screening/api";
@@ -14,7 +15,10 @@ import {
   cvScreeningReducer,
   getCvChecklistState,
 } from "@/lib/cv-screening/state";
-import type { CvSelectedFile } from "@/lib/cv-screening/types";
+import type {
+  CvScreeningAction,
+  CvSelectedFile,
+} from "@/lib/cv-screening/types";
 import { useCvScreeningSocket } from "./useCvScreeningSocket";
 
 const DEFAULT_JOB_DESCRIPTION = `We are looking for a Senior Backend Engineer to join our team. The ideal candidate has 5+ years of experience with Go or Node.js, deep knowledge of AWS (Lambda, API Gateway, RDS, S3), and hands-on experience building production event-driven systems.
@@ -267,15 +271,7 @@ async function runAnalysis(input: {
   jobDescription: string;
   connectionId: string;
   requestId: string | null;
-  dispatch: React.Dispatch<{
-    type:
-      | "analysis_requested"
-      | "analysis_accepted"
-      | "analysis_failed";
-    requestId?: string | null;
-    acceptedAt?: string;
-    message?: string;
-  }>;
+  dispatch: Dispatch<CvScreeningAction>;
 }): Promise<void> {
   input.dispatch({ type: "analysis_requested" });
 
