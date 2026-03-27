@@ -81,7 +81,10 @@ export function cvScreeningReducer(
     case "analysis_accepted":
       return {
         ...state,
-        phase: "processing",
+        phase:
+          state.phase === "submitting" || state.phase === "processing"
+            ? "processing"
+            : state.phase,
         requestId: action.requestId,
         acceptedAt: action.acceptedAt,
       };

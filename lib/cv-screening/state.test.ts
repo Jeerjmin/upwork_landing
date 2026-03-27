@@ -104,4 +104,49 @@ describe("cvScreeningReducer", () => {
     expect(started.phase).toBe("processing");
     expect(started.requestId).toBe("req-started");
   });
+
+  it("keeps the results state when the HTTP accepted response arrives after completion", () => {
+    const completed = cvScreeningReducer(createInitialCvScreeningState(), {
+      type: "analysis_completed",
+      requestId: "req-finished",
+      data: {
+        profile: {
+          name: "Oleg Kostenko",
+          currentRole: "AI Engineering Consultant",
+          experienceSummary: "7+ years backend, 1 year AI systems",
+          keySkills: ["Go", "Node.js", "AWS"],
+          education: "Computer Science",
+        },
+        fit: {
+          overall: 82,
+          summary: "Strong backend and AI systems fit.",
+          breakdown: {
+            technicalSkills: 92,
+            experienceLevel: 88,
+            aiLlmExposure: 95,
+            domainFit: 75,
+          },
+        },
+        flags: [{ severity: "positive", text: "Event-driven systems at scale." }],
+        questions: [
+          {
+            question: "How would you design an exactly-once Kafka consumer?",
+            why: "Tests distributed-systems depth.",
+          },
+        ],
+      },
+    });
+
+    const acceptedAfterCompletion = cvScreeningReducer(completed, {
+      type: "analysis_accepted",
+      requestId: "req-finished",
+      acceptedAt: "2026-03-27T15:20:00.000Z",
+    });
+
+    expect(acceptedAfterCompletion.phase).toBe("results");
+    expect(acceptedAfterCompletion.result?.fit.overall).toBe(82);
+    expect(acceptedAfterCompletion.acceptedAt).toBe(
+      "2026-03-27T15:20:00.000Z",
+    );
+  });
 });
