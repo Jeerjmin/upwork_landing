@@ -6,7 +6,6 @@ interface InputScreenProps {
   onJobDescriptionChange: (value: string) => void;
   onClearJobDescription: () => void;
   onUploadClick: () => void;
-  onClearFile: () => void;
 }
 
 export function InputScreen({
@@ -15,7 +14,6 @@ export function InputScreen({
   onJobDescriptionChange,
   onClearJobDescription,
   onUploadClick,
-  onClearFile,
 }: InputScreenProps) {
   return (
     <>
@@ -90,23 +88,6 @@ export function InputScreen({
                   <div className="cv-file-meta">
                     PDF · {formatFileSize(selectedFile.size)} · uploaded
                   </div>
-                </div>
-
-                <div className="cv-file-actions">
-                  <button
-                    className="cv-button-ghost"
-                    type="button"
-                    onClick={onUploadClick}
-                  >
-                    replace
-                  </button>
-                  <button
-                    className="cv-button-ghost"
-                    type="button"
-                    onClick={onClearFile}
-                  >
-                    remove
-                  </button>
                 </div>
               </div>
 

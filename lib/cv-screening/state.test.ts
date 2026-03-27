@@ -149,4 +149,22 @@ describe("cvScreeningReducer", () => {
       "2026-03-27T15:20:00.000Z",
     );
   });
+
+  it("clears the selected file when the workflow is reset", () => {
+    const withFile = cvScreeningReducer(createInitialCvScreeningState(), {
+      type: "file_selected",
+      file: {
+        name: "candidate.pdf",
+        size: 84000,
+        type: "application/pdf",
+      },
+    });
+
+    const reset = cvScreeningReducer(withFile, {
+      type: "workflow_reset",
+    });
+
+    expect(reset.selectedFile).toBeNull();
+    expect(reset.phase).toBe("input");
+  });
 });

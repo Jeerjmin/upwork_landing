@@ -135,6 +135,7 @@ export function cvScreeningReducer(
       return {
         ...state,
         phase: "input",
+        selectedFile: null,
         requestId: null,
         acceptedAt: null,
         progressMessages: [],

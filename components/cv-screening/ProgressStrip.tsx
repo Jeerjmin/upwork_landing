@@ -2,25 +2,17 @@ import type { CvChecklistState } from "@/lib/cv-screening/types";
 
 interface ProgressStripProps {
   checklist: CvChecklistState;
-  isDisabled: boolean;
-  latestProgressMessage: string | null;
+  statusLabel: string;
+  visualProgress: number;
   error: string | null;
-  onAnalyze: () => void;
 }
 
 export function ProgressStrip({
   checklist,
-  isDisabled,
-  latestProgressMessage,
+  statusLabel,
+  visualProgress,
   error,
-  onAnalyze,
 }: ProgressStripProps) {
-  const analysisLabel = checklist.isAnalyzing
-    ? latestProgressMessage ?? "Analysis in progress"
-    : checklist.hasConnection
-      ? "Analysis pending"
-      : "WebSocket connecting";
-
   return (
     <div className="cv-strip">
       <div className="cv-strip-left">
@@ -42,22 +34,24 @@ export function ProgressStrip({
                 : "pending"
             }`}
           >
-            {analysisLabel}
+            {statusLabel}
           </span>
+        </div>
+
+        <div className="cv-progress-block">
+          <div className="cv-progress-meta">
+            <span className="cv-progress-label">{statusLabel}</span>
+          </div>
+          <div className={`cv-progress-track ${error ? "is-error" : ""}`}>
+            <div
+              className={`cv-progress-fill ${checklist.isAnalyzing ? "is-active" : ""}`}
+              style={{ width: `${Math.round(visualProgress * 100)}%` }}
+            />
+          </div>
         </div>
 
         {error ? <div className="cv-strip-note is-error">{error}</div> : null}
       </div>
-
-      <button
-        className="cv-analyze-button"
-        type="button"
-        onClick={onAnalyze}
-        disabled={isDisabled}
-      >
-        {checklist.isAnalyzing ? "Analyzing…" : "Analyze candidate"}
-        <span className="cv-arrow">→</span>
-      </button>
     </div>
   );
 }

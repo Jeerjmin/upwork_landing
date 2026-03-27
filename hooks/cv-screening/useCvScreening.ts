@@ -4,10 +4,15 @@ import { useEffect, useReducer, useState } from "react";
 
 import { analyzeCv } from "@/lib/cv-screening/api";
 import {
+  getProgressTarget,
+  getStatusLabel,
+  shouldAutoStartAnalysis,
+  stepProgressTowardsTarget,
+} from "@/lib/cv-screening/progress";
+import {
   createInitialCvScreeningState,
   cvScreeningReducer,
   getCvChecklistState,
-  isCvReadyToAnalyze,
 } from "@/lib/cv-screening/state";
 import type { CvSelectedFile } from "@/lib/cv-screening/types";
 import { useCvScreeningSocket } from "./useCvScreeningSocket";
@@ -34,6 +39,8 @@ export function useCvScreening() {
     jobDescription: DEFAULT_JOB_DESCRIPTION,
   });
   const [file, setFile] = useState<File | null>(null);
+  const [pendingAutoStart, setPendingAutoStart] = useState(false);
+  const [visualProgress, setVisualProgress] = useState(0);
   const { subscribe, subscribeStatus } = useCvScreeningSocket();
 
   useEffect(() => {
@@ -111,54 +118,76 @@ export function useCvScreening() {
     });
   }, [state.isSocketConnected, state.phase, state.requestId]);
 
-  async function startAnalysis(): Promise<void> {
-    if (!file) {
-      dispatch({
-        type: "analysis_failed",
-        requestId: null,
-        message: "Upload a PDF CV before starting the analysis.",
-      });
+  useEffect(() => {
+    if (
+      !shouldAutoStartAnalysis({
+        pendingAutoStart,
+        hasFile: Boolean(file),
+        hasJobDescription: Boolean(state.jobDescription.trim()),
+        hasConnection: Boolean(state.connectionId),
+        isAnalyzing:
+          state.phase === "submitting" || state.phase === "processing",
+      })
+    ) {
       return;
     }
 
-    if (!state.connectionId) {
-      dispatch({
-        type: "analysis_failed",
-        requestId: null,
-        message: "WebSocket connection is not ready yet. Please wait a moment.",
-      });
+    if (!file || !state.connectionId) {
       return;
     }
 
-    if (!isCvReadyToAnalyze(state)) {
+    setPendingAutoStart(false);
+    setVisualProgress(0);
+
+    void runAnalysis({
+      file,
+      jobDescription: state.jobDescription,
+      connectionId: state.connectionId,
+      requestId: state.requestId,
+      dispatch,
+    });
+  }, [
+    pendingAutoStart,
+    file,
+    state.jobDescription,
+    state.connectionId,
+    state.phase,
+    state.requestId,
+  ]);
+
+  useEffect(() => {
+    if (state.result) {
+      setVisualProgress(1);
       return;
     }
 
-    dispatch({ type: "analysis_requested" });
-
-    try {
-      const response = await analyzeCv({
-        file,
-        jobDescription: state.jobDescription,
-        connectionId: state.connectionId,
-      });
-
-      dispatch({
-        type: "analysis_accepted",
-        requestId: response.requestId,
-        acceptedAt: response.acceptedAt,
-      });
-    } catch (error) {
-      dispatch({
-        type: "analysis_failed",
-        requestId: state.requestId,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to start CV screening",
-      });
+    if (
+      state.phase === "input" &&
+      !pendingAutoStart &&
+      state.progressMessages.length === 0 &&
+      !state.error
+    ) {
+      setVisualProgress(0);
+      return;
     }
-  }
+
+    const target = getProgressTarget(state);
+    const timer = window.setInterval(() => {
+      setVisualProgress((current) =>
+        stepProgressTowardsTarget(current, target, Boolean(state.error)),
+      );
+    }, 120);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [
+    pendingAutoStart,
+    state.phase,
+    state.progressMessages,
+    state.error,
+    state.result,
+  ]);
 
   function updateJobDescription(value: string): void {
     dispatch({
@@ -170,12 +199,14 @@ export function useCvScreening() {
   function selectFile(nextFile: File | null): void {
     if (!nextFile) {
       setFile(null);
+      setPendingAutoStart(false);
       dispatch({ type: "file_cleared" });
       return;
     }
 
     if (!isPdfFile(nextFile)) {
       setFile(null);
+      setPendingAutoStart(false);
       dispatch({ type: "file_cleared" });
       dispatch({
         type: "analysis_failed",
@@ -186,29 +217,32 @@ export function useCvScreening() {
     }
 
     setFile(nextFile);
+    setPendingAutoStart(true);
+    setVisualProgress(0);
     dispatch({
       type: "file_selected",
       file: toSelectedFile(nextFile),
     });
   }
 
-  function clearFile(): void {
-    setFile(null);
-    dispatch({ type: "file_cleared" });
-  }
-
   function resetWorkflow(): void {
+    setFile(null);
+    setPendingAutoStart(false);
+    setVisualProgress(0);
     dispatch({ type: "workflow_reset" });
   }
 
   return {
     state,
     checklist: getCvChecklistState(state),
-    canAnalyze: isCvReadyToAnalyze(state),
+    visualProgress,
+    statusLabel: getStatusLabel({
+      state,
+      pendingAutoStart,
+      hasConnection: Boolean(state.connectionId),
+    }),
     updateJobDescription,
     selectFile,
-    clearFile,
-    startAnalysis,
     resetWorkflow,
   };
 }
@@ -226,4 +260,45 @@ function isPdfFile(file: File): boolean {
     file.type === "application/pdf" ||
     file.name.toLowerCase().endsWith(".pdf")
   );
+}
+
+async function runAnalysis(input: {
+  file: File;
+  jobDescription: string;
+  connectionId: string;
+  requestId: string | null;
+  dispatch: React.Dispatch<{
+    type:
+      | "analysis_requested"
+      | "analysis_accepted"
+      | "analysis_failed";
+    requestId?: string | null;
+    acceptedAt?: string;
+    message?: string;
+  }>;
+}): Promise<void> {
+  input.dispatch({ type: "analysis_requested" });
+
+  try {
+    const response = await analyzeCv({
+      file: input.file,
+      jobDescription: input.jobDescription,
+      connectionId: input.connectionId,
+    });
+
+    input.dispatch({
+      type: "analysis_accepted",
+      requestId: response.requestId,
+      acceptedAt: response.acceptedAt,
+    });
+  } catch (error) {
+    input.dispatch({
+      type: "analysis_failed",
+      requestId: input.requestId,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to start CV screening",
+    });
+  }
 }

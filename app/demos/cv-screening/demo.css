@@ -445,6 +445,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: min(560px, 100%);
 }
 
 .cv-checklist {
@@ -492,20 +493,55 @@ body {
   color: var(--cv-red);
 }
 
-.cv-analyze-button {
-  min-width: 214px;
-  padding: 12px 36px;
-  white-space: nowrap;
+.cv-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(520px, 100%);
 }
 
-.cv-analyze-button:disabled {
-  cursor: default;
-  opacity: 0.55;
-  transform: none;
+.cv-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--cv-ink-mid);
+  font-family: var(--mono);
+  font-size: 10px;
 }
 
-.cv-arrow {
-  font-size: 14px;
+.cv-progress-track {
+  position: relative;
+  overflow: hidden;
+  height: 8px;
+  border: 1px solid var(--cv-border-2);
+  border-radius: 999px;
+  background: var(--cv-card-alt);
+}
+
+.cv-progress-fill {
+  position: relative;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cv-amber), #e8a040);
+  transition: width 220ms ease;
+}
+
+.cv-progress-fill.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 100%
+  );
+  animation: cv-progress-shimmer 1.6s linear infinite;
+}
+
+.cv-progress-track.is-error .cv-progress-fill {
+  background: linear-gradient(90deg, var(--cv-red), #d86a6a);
 }
 
 .cv-result-header {
@@ -821,6 +857,16 @@ body {
 
   50% {
     opacity: 0.3;
+  }
+}
+
+@keyframes cv-progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
   }
 }
 

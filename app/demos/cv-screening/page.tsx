@@ -14,16 +14,12 @@ export default function CvScreeningPage() {
   const {
     state,
     checklist,
-    canAnalyze,
+    visualProgress,
+    statusLabel,
     updateJobDescription,
     selectFile,
-    clearFile,
-    startAnalysis,
     resetWorkflow,
   } = useCvScreening();
-
-  const latestProgressMessage =
-    state.progressMessages[state.progressMessages.length - 1] ?? null;
 
   function handleFileChange(
     event: ChangeEvent<HTMLInputElement>,
@@ -58,17 +54,13 @@ export default function CvScreeningPage() {
               updateJobDescription("");
             }}
             onUploadClick={() => fileInputRef.current?.click()}
-            onClearFile={clearFile}
           />
 
           <ProgressStrip
             checklist={checklist}
-            isDisabled={!canAnalyze}
-            latestProgressMessage={latestProgressMessage}
+            statusLabel={statusLabel}
+            visualProgress={visualProgress}
             error={state.error}
-            onAnalyze={() => {
-              void startAnalysis();
-            }}
           />
         </>
       )}
