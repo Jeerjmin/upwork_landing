@@ -65,17 +65,17 @@ const siteConfig = {
     cards: [
       {
         colorVariant: "c1",
-        tag: "Document processing",
-        title: "Your team manually reads every PDF, invoice, and contract",
+        tag: "Hiring AI",
+        title: "Your team manually screens every CV and application PDF",
         description:
-          "An email arrives with a PDF. Someone opens it, copies numbers into a spreadsheet, forwards the results. Hours later. With mistakes. I replace that entire loop with an AI agent that does it in seconds — and flags anything it's unsure about for human review.",
-        demoUrl: "https://example.com/document-processing-demo",
+          "A role opens, CVs start arriving, and recruiters spend hours scanning for fit, risks, and interview angles. I replace that first-pass review with an AI workflow that reads each CV in seconds, scores fit against the role, and highlights what actually needs human judgment.",
+        demoUrl: "/demos/cv-screening",
         githubUrl: "https://github.com/your-username/document-processing-demo",
         beforeText:
-          "Employee opens PDF, manually extracts data, enters into system. 15–45 min per document. ~5% error rate.",
+          "Recruiter opens CV, compares it against the JD by hand, writes notes, and still misses weak signals. 10–20 min per candidate.",
         afterText:
-          "Email arrives → extracted in seconds → written to your system → Slack notification. Human only reviews flagged items.",
-        resultText: "Processing time cut by ~95%",
+          "CV arrives → scored against the role in seconds → strengths, flags, and interview questions generated instantly.",
+        resultText: "First-pass screening cut to seconds",
       },
       {
         colorVariant: "c2",
