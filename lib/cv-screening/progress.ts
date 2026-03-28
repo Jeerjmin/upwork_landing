@@ -1,5 +1,12 @@
 import type { CvScreeningState } from "./types";
 
+export const CV_LOADING_STEPS = [
+  { label: "Parsing PDF document", progress: 0.18 },
+  { label: "Building candidate profile", progress: 0.38 },
+  { label: "Scoring role fit", progress: 0.62 },
+  { label: "Drafting strengths and risks", progress: 0.82 },
+] as const;
+
 export function getProgressTarget(
   state: Pick<
     CvScreeningState,
@@ -17,19 +24,22 @@ export function getProgressTarget(
   const latestMessage =
     state.progressMessages[state.progressMessages.length - 1] ?? "";
 
-  if (latestMessage === "Extracting PDF text") {
-    return 0.42;
+  switch (latestMessage) {
+    case "Extracting PDF text":
+      return 0.38;
+    case "Running Claude analysis":
+      return 0.5;
+    case "Building candidate profile":
+      return 0.62;
+    case "Scoring role fit":
+      return 0.76;
+    case "Drafting strengths and risks":
+      return 0.88;
+    case "Finalizing result":
+      return 0.99;
+    default:
+      return state.phase === "processing" ? 0.24 : 0;
   }
-
-  if (latestMessage === "Running Claude analysis") {
-    return 0.92;
-  }
-
-  if (state.phase === "processing") {
-    return 0.3;
-  }
-
-  return 0;
 }
 
 export function stepProgressTowardsTarget(
@@ -100,4 +110,8 @@ export function getStatusLabel(input: {
   }
 
   return "Waiting for PDF";
+}
+
+export function getCompletedLoadingStepCount(progress: number): number {
+  return CV_LOADING_STEPS.filter((step) => progress >= step.progress).length;
 }

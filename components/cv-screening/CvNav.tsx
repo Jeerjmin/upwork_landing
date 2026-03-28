@@ -18,7 +18,7 @@ export function CvNav({
       <div className="cv-nav-right">
         {showBackButton ? (
           <button className="cv-nav-back" type="button" onClick={onBack}>
-            ← back to input
+            ← new analysis
           </button>
         ) : null}
 
@@ -26,7 +26,7 @@ export function CvNav({
           className={`cv-nav-badge ${isConnected ? "is-live" : "is-reconnecting"}`}
         >
           <span className="cv-dot" />
-          {isConnected ? "WebSocket API · Live" : "WebSocket API · Reconnecting"}
+          {isConnected ? "Claude API · Live" : "Claude API · Reconnecting"}
         </div>
       </div>
     </nav>

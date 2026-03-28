@@ -88,6 +88,16 @@ export function useCvScreening() {
           });
           return;
 
+        case "analysis_partial":
+          dispatch({
+            type: "analysis_partial_received",
+            requestId: message.requestId,
+            section: message.section,
+            seq: message.seq,
+            patch: message.patch,
+          });
+          return;
+
         case "analysis_completed":
           dispatch({
             type: "analysis_completed",
@@ -239,6 +249,7 @@ export function useCvScreening() {
   return {
     state,
     checklist: getCvChecklistState(state),
+    pendingAutoStart,
     visualProgress,
     statusLabel: getStatusLabel({
       state,
@@ -260,10 +271,7 @@ function toSelectedFile(file: File): CvSelectedFile {
 }
 
 function isPdfFile(file: File): boolean {
-  return (
-    file.type === "application/pdf" ||
-    file.name.toLowerCase().endsWith(".pdf")
-  );
+  return file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
 }
 
 async function runAnalysis(input: {
@@ -292,9 +300,7 @@ async function runAnalysis(input: {
       type: "analysis_failed",
       requestId: input.requestId,
       message:
-        error instanceof Error
-          ? error.message
-          : "Failed to start CV screening",
+        error instanceof Error ? error.message : "Failed to analyze CV.",
     });
   }
 }

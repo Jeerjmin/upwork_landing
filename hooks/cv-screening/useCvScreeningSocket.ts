@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { CvScreeningSocketEvent } from "@/lib/cv-screening/types";
 
@@ -156,6 +156,14 @@ const manager = new CvScreeningSocketManager();
 export function useCvScreeningSocket() {
   const [status, setStatus] = useState(manager.getStatus());
 
+  const subscribe = useCallback((handler: EventHandler) => {
+    return manager.subscribe(handler);
+  }, []);
+
+  const subscribeStatus = useCallback((handler: StatusHandler) => {
+    return manager.subscribeStatus(handler);
+  }, []);
+
   useEffect(() => {
     const release = manager.retain();
     const unsubscribeStatus = manager.subscribeStatus(setStatus);
@@ -167,8 +175,8 @@ export function useCvScreeningSocket() {
   }, []);
 
   return {
-    subscribe: (handler: EventHandler) => manager.subscribe(handler),
-    subscribeStatus: (handler: StatusHandler) => manager.subscribeStatus(handler),
+    subscribe,
+    subscribeStatus,
     isConnected: status.isConnected,
     connectionId: status.connectionId,
   };
@@ -193,6 +201,7 @@ function isCvScreeningEvent(value: unknown): value is CvScreeningSocketEvent {
     "connection_ready",
     "analysis_started",
     "analysis_progress",
+    "analysis_partial",
     "analysis_completed",
     "analysis_failed",
   ].includes(value.type);

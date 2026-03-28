@@ -1,6 +1,15 @@
-import type { CSSProperties } from "react";
+"use client";
 
-import type { CvScreeningResult } from "@/lib/cv-screening/types";
+import { useEffect, useState } from "react";
+
+import {
+  extractJobTitle,
+  extractWorkModel,
+  formatAcceptedAt,
+  formatExperienceLabel,
+  getMatchLabel,
+} from "@/lib/cv-screening/presenter";
+import type { CvFlagSeverity, CvScreeningResult } from "@/lib/cv-screening/types";
 
 interface ResultsScreenProps {
   result: CvScreeningResult;
@@ -9,6 +18,9 @@ interface ResultsScreenProps {
   acceptedAt: string | null;
   onReset: () => void;
 }
+
+const SCORE_RING_RADIUS = 36;
+const SCORE_RING_CIRCUMFERENCE = 2 * Math.PI * SCORE_RING_RADIUS;
 
 export function ResultsScreen({
   result,
@@ -19,14 +31,45 @@ export function ResultsScreen({
 }: ResultsScreenProps) {
   const jobTitle = extractJobTitle(jobDescription);
   const workModel = extractWorkModel(jobDescription);
-  const scoreStyle = {
-    "--cv-score": `${result.fit.overall}`,
-  } as CSSProperties;
+  const score = Math.max(0, Math.min(100, result.fit.overall));
+  const highlightFlags = result.flags.filter((flag) => flag.severity === "positive");
+  const concernFlags = result.flags.filter((flag) => flag.severity !== "positive");
+  const [scoreOffset, setScoreOffset] = useState(SCORE_RING_CIRCUMFERENCE);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setScoreOffset(SCORE_RING_CIRCUMFERENCE * (1 - score / 100));
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [score]);
 
   return (
-    <>
+    <div className="cv-results-screen cv-fade-in">
       <div className="cv-result-header">
-        <div className="cv-result-header-left">
+        <div className="cv-score-ring-wrap">
+          <svg className="cv-score-ring" viewBox="0 0 84 84" aria-hidden="true">
+            <circle className="cv-score-ring-bg" cx="42" cy="42" r="36" />
+            <circle
+              className="cv-score-ring-fg"
+              cx="42"
+              cy="42"
+              r="36"
+              style={{
+                strokeDasharray: SCORE_RING_CIRCUMFERENCE,
+                strokeDashoffset: scoreOffset,
+              }}
+            />
+          </svg>
+          <div className="cv-score-ring-text">
+            <span className="cv-score-number">{score}</span>
+            <span className="cv-score-pct">/ 100</span>
+          </div>
+        </div>
+
+        <div className="cv-result-header-content">
           <div className="cv-result-meta">
             <span>{fileName}</span>
             <span className="cv-result-meta-separator">·</span>
@@ -37,28 +80,24 @@ export function ResultsScreen({
             <span>{formatAcceptedAt(acceptedAt)}</span>
           </div>
 
-          <div className="cv-result-candidate">{result.profile.name}</div>
-          <div className="cv-result-position">
-            {result.profile.currentRole} · {result.profile.experienceSummary}
-          </div>
-        </div>
-
-        <div className="cv-score-hero">
-          <div className="cv-score-circle" style={scoreStyle}>
-            <span className="cv-score-number">{result.fit.overall}</span>
-            <span className="cv-score-pct">/ 100</span>
-          </div>
-
-          <div className="cv-score-info">
-            <div className="cv-score-label">
-              {getMatchLabel(result.fit.overall)}
+          <div className="cv-result-overview">
+            <div className="cv-result-identity">
+              <div className="cv-result-candidate">{result.profile.name}</div>
+              <div className="cv-result-position">
+                {result.profile.currentRole} ·{" "}
+                {formatExperienceLabel(result.profile.experience)}
+              </div>
             </div>
-            <div className="cv-score-summary">{result.fit.summary}</div>
+
+            <div className="cv-score-info">
+              <div className="cv-score-label">{getMatchLabel(score)}</div>
+              <div className="cv-score-summary">{result.fit.summary}</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="cv-results-grid">
+      <div className="cv-results-body">
         <section className="cv-result-card">
           <div className="cv-card-label">Candidate profile</div>
           <div className="cv-profile-grid">
@@ -69,7 +108,7 @@ export function ResultsScreen({
             />
             <ProfileRow
               label="Experience"
-              value={result.profile.experienceSummary}
+              value={formatExperienceLabel(result.profile.experience)}
               tone="teal"
             />
             <ProfileRow
@@ -101,63 +140,39 @@ export function ResultsScreen({
             <BreakdownRow
               label="Domain fit"
               value={result.fit.breakdown.domainFit}
-              tone={
-                result.fit.breakdown.domainFit >= 80 ? "teal" : "amber"
-              }
+              tone={result.fit.breakdown.domainFit >= 80 ? "teal" : "amber"}
             />
           </div>
         </section>
 
         <section className="cv-result-card">
-          <div className="cv-card-label">Flags &amp; highlights</div>
-          <div className="cv-flags">
-            {result.flags.map((flag) => (
-              <div
-                key={`${flag.severity}-${flag.text}`}
-                className={`cv-flag cv-flag-${toFlagTone(flag.severity)}`}
-              >
-                <span className="cv-flag-icon">
-                  {flag.severity === "positive"
-                    ? "✓"
-                    : flag.severity === "risk"
-                      ? "×"
-                      : "!"}
-                </span>
-                <span>{flag.text}</span>
-              </div>
-            ))}
-          </div>
+          <div className="cv-card-label">Highlights</div>
+          <FlagList
+            emptyMessage="No standout strengths extracted."
+            flags={highlightFlags}
+          />
         </section>
 
         <section className="cv-result-card">
-          <div className="cv-card-label">Suggested interview questions</div>
-          <div className="cv-questions">
-            {result.questions.map((question, index) => (
-              <div className="cv-question" key={question.question}>
-                <div className="cv-question-number">
-                  Q {String(index + 1).padStart(2, "0")}
-                </div>
-                <div className="cv-question-text">{question.question}</div>
-                <div className="cv-question-why">{question.why}</div>
-              </div>
-            ))}
-          </div>
+          <div className="cv-card-label">Flags</div>
+          <FlagList
+            emptyMessage="No material concerns surfaced."
+            flags={concernFlags}
+          />
         </section>
       </div>
 
       <div className="cv-results-footer">
         <div className="cv-results-note">
-          <em>{"//"}</em> In production — the same analysis can run
-          automatically
-          when a CV arrives by email. Results can be posted to your ATS in
-          seconds.
+          <em>{"//"}</em> In production — same analysis runs automatically when
+          CV arrives by email. Results posted to your ATS in seconds.
         </div>
 
         <button className="cv-results-button" type="button" onClick={onReset}>
-          ← Analyze another →
+          ← Analyze another
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -201,58 +216,36 @@ function BreakdownRow(props: {
   );
 }
 
-function getMatchLabel(score: number): string {
-  if (score >= 80) {
-    return "Strong match";
-  }
-
-  if (score >= 65) {
-    return "Potential match";
-  }
-
-  return "Needs review";
-}
-
-function extractJobTitle(jobDescription: string): string {
+function FlagList(props: {
+  emptyMessage: string;
+  flags: Array<{
+    severity: CvFlagSeverity;
+    text: string;
+  }>;
+}) {
   return (
-    jobDescription
-      .split("\n")
-      .map((line) => line.trim())
-      .find(Boolean) ?? "Role under review"
+    <div className="cv-flags">
+      {props.flags.length ? (
+        props.flags.map((flag) => (
+          <div
+            key={`${flag.severity}-${flag.text}`}
+            className={`cv-flag cv-flag-${toFlagTone(flag.severity)}`}
+          >
+            <span className="cv-flag-icon">
+              {flag.severity === "positive"
+                ? "✓"
+                : flag.severity === "risk"
+                  ? "×"
+                  : "!"}
+            </span>
+            <span>{flag.text}</span>
+          </div>
+        ))
+      ) : (
+        <div className="cv-flag-empty">{props.emptyMessage}</div>
+      )}
+    </div>
   );
-}
-
-function extractWorkModel(jobDescription: string): string {
-  const normalized = jobDescription.toLowerCase();
-
-  if (normalized.includes("remote")) {
-    return "Remote";
-  }
-
-  if (normalized.includes("hybrid")) {
-    return "Hybrid";
-  }
-
-  if (normalized.includes("onsite") || normalized.includes("on-site")) {
-    return "On-site";
-  }
-
-  return "Flexible";
-}
-
-function formatAcceptedAt(acceptedAt: string | null): string {
-  if (!acceptedAt) {
-    return "analyzed just now";
-  }
-
-  const diffMs = Date.now() - new Date(acceptedAt).getTime();
-  const diffMinutes = Math.max(0, Math.round(diffMs / 60000));
-
-  if (diffMinutes <= 1) {
-    return "analyzed just now";
-  }
-
-  return `analyzed ${diffMinutes} min ago`;
 }
 
 function toFlagTone(

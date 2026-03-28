@@ -1,13 +1,21 @@
 export type CvFlagSeverity = "positive" | "warning" | "risk";
+export type CvPartialSection = "profile" | "fit" | "flags";
+
+export interface CvExperience {
+  years: string;
+  focus: string;
+}
+
+export interface CvScreeningProfile {
+  name: string;
+  currentRole: string;
+  experience: CvExperience;
+  keySkills: string[];
+  education?: string;
+}
 
 export interface CvScreeningResult {
-  profile: {
-    name: string;
-    currentRole: string;
-    experienceSummary: string;
-    keySkills: string[];
-    education?: string;
-  };
+  profile: CvScreeningProfile;
   fit: {
     overall: number;
     summary: string;
@@ -22,9 +30,23 @@ export interface CvScreeningResult {
     severity: CvFlagSeverity;
     text: string;
   }>;
-  questions: Array<{
-    question: string;
-    why: string;
+}
+
+export interface CvScreeningPartialProfilePatch
+  extends Partial<Omit<CvScreeningProfile, "experience">> {
+  experience?: Partial<CvExperience>;
+}
+
+export interface CvScreeningPartialPatch {
+  profile?: CvScreeningPartialProfilePatch;
+  fit?: {
+    overall?: number;
+    summary?: string;
+    breakdown?: Partial<CvScreeningResult["fit"]["breakdown"]>;
+  };
+  flags?: Array<{
+    severity?: CvFlagSeverity;
+    text?: string;
   }>;
 }
 
@@ -46,6 +68,14 @@ export interface AnalysisProgressEvent {
   message: string;
 }
 
+export interface AnalysisPartialEvent {
+  type: "analysis_partial";
+  requestId: string;
+  section: CvPartialSection;
+  seq: number;
+  patch: CvScreeningPartialPatch;
+}
+
 export interface AnalysisCompletedEvent {
   type: "analysis_completed";
   requestId: string;
@@ -63,6 +93,7 @@ export type CvScreeningSocketEvent =
   | ConnectionReadyEvent
   | AnalysisStartedEvent
   | AnalysisProgressEvent
+  | AnalysisPartialEvent
   | AnalysisCompletedEvent
   | AnalysisFailedEvent;
 
@@ -101,6 +132,9 @@ export interface CvScreeningState {
   acceptedAt: string | null;
   progressMessages: string[];
   result: CvScreeningResult | null;
+  partialResult: CvScreeningPartialPatch | null;
+  activeSection: CvPartialSection | null;
+  lastPartialSeq: number;
   error: string | null;
 }
 
@@ -124,6 +158,13 @@ export type CvScreeningAction =
       type: "analysis_progress_received";
       requestId: string;
       message: string;
+    }
+  | {
+      type: "analysis_partial_received";
+      requestId: string;
+      section: CvPartialSection;
+      seq: number;
+      patch: CvScreeningPartialPatch;
     }
   | {
       type: "analysis_completed";

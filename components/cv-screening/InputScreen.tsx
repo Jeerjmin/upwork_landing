@@ -1,20 +1,52 @@
+"use client";
+
+import type { DragEvent } from "react";
+import { useState } from "react";
+
+import { formatFileSize } from "@/lib/cv-screening/presenter";
 import type { CvSelectedFile } from "@/lib/cv-screening/types";
 
 interface InputScreenProps {
   jobDescription: string;
   selectedFile: CvSelectedFile | null;
+  error: string | null;
+  fileStatusLabel: string;
+  isAutoStarting: boolean;
   onJobDescriptionChange: (value: string) => void;
   onClearJobDescription: () => void;
   onUploadClick: () => void;
+  onFileDrop: (file: File | null) => void;
 }
 
 export function InputScreen({
   jobDescription,
   selectedFile,
+  error,
+  fileStatusLabel,
+  isAutoStarting,
   onJobDescriptionChange,
   onClearJobDescription,
   onUploadClick,
+  onFileDrop,
 }: InputScreenProps) {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  function handleDragOver(event: DragEvent<HTMLDivElement>): void {
+    event.preventDefault();
+    setIsDragOver(true);
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLDivElement>): void {
+    event.preventDefault();
+    setIsDragOver(false);
+  }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>): void {
+    event.preventDefault();
+    setIsDragOver(false);
+    onFileDrop(event.dataTransfer.files?.[0] ?? null);
+  }
+
   return (
     <>
       <div className="cv-hero">
@@ -24,10 +56,10 @@ export function InputScreen({
           not days
         </div>
         <div className="cv-hero-subtitle">
-          Paste a job description, upload a CV — get structured profile, fit
-          score, red flags, and tailored interview questions instantly. The
-          same pipeline works for any PDF document type: invoices, contracts,
-          applications.
+          Paste a job description, upload a CV — analysis starts
+          automatically. Get structured profile, fit score, and red flags in a
+          compact screening report. The same pipeline works for any PDF:
+          invoices, contracts, applications.
         </div>
       </div>
 
@@ -73,57 +105,81 @@ export function InputScreen({
             <span className="cv-step">02</span>Candidate CV
           </div>
 
-          {selectedFile ? (
-            <div className="cv-file-loaded">
-              <div className="cv-file-header">
-                <div className="cv-file-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                  </svg>
-                </div>
+          {selectedFile && !error ? (
+            <div className="cv-file-card">
+              <div className="cv-file-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </div>
 
-                <div className="cv-file-info">
-                  <div className="cv-file-name">{selectedFile.name}</div>
-                  <div className="cv-file-meta">
-                    PDF · {formatFileSize(selectedFile.size)} · uploaded
-                  </div>
+              <div className="cv-file-info">
+                <div className="cv-file-name">{selectedFile.name}</div>
+                <div className="cv-file-meta">
+                  PDF · {formatFileSize(selectedFile.size)} ·{" "}
+                  {isAutoStarting ? "uploading..." : "uploaded"}
                 </div>
               </div>
 
-              <div className="cv-status-row">
-                <div className="cv-status-ok">✓ CV ready</div>
+              <div className="cv-file-analyzing">
+                {isAutoStarting ? <div className="cv-spin" aria-hidden="true" /> : null}
+                {getUploadStatusText({
+                  isAutoStarting,
+                  fileStatusLabel,
+                })}
               </div>
             </div>
           ) : (
-            <div className="cv-upload-empty">
-              <div className="cv-upload-copy">
-                <div className="cv-upload-title">Upload candidate CV</div>
-                <p className="cv-upload-text">
-                  Use a PDF resume or application export. The analysis stays
-                  stateless and streams back over the live WebSocket session.
-                </p>
+            <div
+              className={`cv-drop-zone ${isDragOver ? "drag-over" : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={onUploadClick}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onUploadClick();
+                }
+              }}
+            >
+              <div className="cv-drop-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="12" y1="18" x2="12" y2="12" />
+                  <polyline points="9 15 12 12 15 15" />
+                </svg>
               </div>
-
-              <button
-                className="cv-upload-button"
-                type="button"
-                onClick={onUploadClick}
-              >
-                Choose PDF →
-              </button>
+              <div className="cv-drop-title">Drop CV here or click to upload</div>
+              <div className="cv-drop-sub">Accepts PDF · Max 10 MB</div>
+              <div className="cv-drop-auto-hint">
+                → analysis starts automatically
+              </div>
             </div>
           )}
+
+          {error ? <div className="cv-input-note is-error">{error}</div> : null}
         </section>
       </div>
     </>
   );
 }
 
-function formatFileSize(size: number): string {
-  if (size < 1024) {
-    return `${size} B`;
+function getUploadStatusText(input: {
+  isAutoStarting: boolean;
+  fileStatusLabel: string;
+}): string {
+  if (input.isAutoStarting) {
+    if (input.fileStatusLabel === "Waiting for WebSocket") {
+      return "waiting for websocket...";
+    }
+
+    return "analyzing...";
   }
 
-  return `${Math.round(size / 1024)} KB`;
+  return "ready";
 }

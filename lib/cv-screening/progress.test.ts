@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getCompletedLoadingStepCount,
   getProgressTarget,
   getStatusLabel,
   shouldAutoStartAnalysis,
@@ -27,10 +28,10 @@ describe("getProgressTarget", () => {
         error: null,
         result: null,
       }),
-    ).toBeCloseTo(0.42);
+    ).toBeCloseTo(0.38);
   });
 
-  it("maps Claude analysis to the long-running ceiling", () => {
+  it("maps section-specific Claude progress monotonically", () => {
     expect(
       getProgressTarget({
         phase: "processing",
@@ -38,18 +39,49 @@ describe("getProgressTarget", () => {
         error: null,
         result: null,
       }),
-    ).toBeCloseTo(0.92);
+    ).toBeCloseTo(0.5);
+
+    expect(
+      getProgressTarget({
+        phase: "processing",
+        progressMessages: ["Building candidate profile"],
+        error: null,
+        result: null,
+      }),
+    ).toBeGreaterThan(0.5);
+
+    expect(
+      getProgressTarget({
+        phase: "processing",
+        progressMessages: ["Finalizing result"],
+        error: null,
+        result: null,
+      }),
+    ).toBeGreaterThan(
+      getProgressTarget({
+        phase: "processing",
+        progressMessages: ["Drafting strengths and risks"],
+        error: null,
+        result: null,
+      }),
+    );
   });
 
   it("completes immediately when a result exists", () => {
     expect(
       getProgressTarget({
         phase: "results",
-        progressMessages: ["Running Claude analysis"],
+        progressMessages: ["Finalizing result"],
         error: null,
         result: { fit: { overall: 82 } },
       } as never),
     ).toBe(1);
+  });
+
+  it("tracks how many loading checklist steps are complete", () => {
+    expect(getCompletedLoadingStepCount(0.17)).toBe(0);
+    expect(getCompletedLoadingStepCount(0.18)).toBe(1);
+    expect(getCompletedLoadingStepCount(0.82)).toBe(4);
   });
 });
 

@@ -74,7 +74,7 @@ const siteConfig = {
         beforeText:
           "Recruiter opens CV, compares it against the JD by hand, writes notes, and still misses weak signals. 10–20 min per candidate.",
         afterText:
-          "CV arrives → scored against the role in seconds → strengths, flags, and interview questions generated instantly.",
+          "CV arrives → scored against the role in seconds → profile, flags, and fit summary generated instantly.",
         resultText: "First-pass screening cut to seconds",
       },
       {
