@@ -1,10 +1,25 @@
 export type DocumentStatus = "pending" | "processing" | "indexed" | "failed";
 export type ChatRole = "user" | "assistant";
+export type AgentSearchFocus =
+  | "comparison"
+  | "trend"
+  | "exploration"
+  | "verification";
 
 export interface ChatSourceDetail {
   name: string;
   score: number;
   chunkId?: string;
+}
+
+export interface AgentTraceStep {
+  iteration: number;
+  query: string;
+  focus: AgentSearchFocus;
+  rationale: string;
+  status: "started" | "completed";
+  resultCount?: number;
+  topDocuments?: string[];
 }
 
 export interface ChatResponse {
@@ -69,10 +84,21 @@ export interface ChatMessage {
   sourceDetails?: ChatSourceDetail[];
   confidence?: number;
   latencyMs?: number;
+  trace?: AgentTraceStep[];
 }
 
 export type WsServerMessage =
   | { type: "chunk"; text: string }
+  | {
+      type: "agent_search";
+      iteration: number;
+      query: string;
+      focus: AgentSearchFocus;
+      rationale: string;
+      status: "started" | "completed";
+      resultCount?: number;
+      topDocuments?: string[];
+    }
   | {
       type: "done";
       conversationId: string;

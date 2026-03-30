@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { AgentTrace } from "@/components/rag-assistant/chat/AgentTrace";
 import { ConfidenceBar } from "@/components/rag-assistant/chat/ConfidenceBar";
 import { SourceChip } from "@/components/rag-assistant/chat/SourceChip";
 import { SourceCite } from "@/components/rag-assistant/chat/SourceCite";
@@ -42,6 +43,10 @@ export function Message({ message, onRetry }: MessageProps) {
           ) : null}
           {assistantError ? <span className="badge badge-red">error</span> : null}
         </div>
+
+        {message.trace && message.trace.length > 0 ? (
+          <AgentTrace trace={message.trace} />
+        ) : null}
 
         <div className="msg-text">
           {showSkeleton ? (
