@@ -1,7 +1,7 @@
 import type { AgentTraceStep } from "./types";
 
 export function formatAgentTraceLabel(step: AgentTraceStep): string {
-  return `Searching ${step.iteration}: ${step.query}`;
+  return `Agent step ${step.iteration}: ${step.query}`;
 }
 
 export function formatAgentTraceDocuments(

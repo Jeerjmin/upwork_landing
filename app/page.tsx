@@ -78,7 +78,7 @@ const siteConfig = {
         tag: "Internal knowledge",
         title: "Your team asks the same questions over and over",
         description:
-          "\"Where's that policy doc?\" \"What were the specs for client X?\" The answer is buried in Notion, Google Drive, or a PDF nobody can find. I build an AI assistant trained on your own documents that answers instantly and always shows the source.",
+          "\"Where's that policy doc?\" \"What were the specs for client X?\" The answer is buried in Notion, Google Drive, or a PDF nobody can find. I build an Agentic RAG assistant that reasons over your documents — it decides how to search, cross-checks across sources, and delivers a grounded answer with citations in seconds.",
         demoUrl: "/demos/rag-assistant",
         githubUrl: "https://github.com/your-username/internal-knowledge-demo",
         beforeText:

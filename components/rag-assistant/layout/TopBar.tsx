@@ -2,6 +2,7 @@ interface TopBarProps {
   apiHealthy: boolean;
   isWsConnected: boolean;
   isUploading: boolean;
+  isAdmin: boolean;
   onUploadClick(): void;
 }
 
@@ -9,6 +10,7 @@ export function TopBar({
   apiHealthy,
   isWsConnected,
   isUploading,
+  isAdmin,
   onUploadClick,
 }: TopBarProps) {
   return (
@@ -29,7 +31,7 @@ export function TopBar({
         </div>
         <div className="logo-sep" />
         <div className="topbar-meta">
-          <span className="workspace-name">live demo / internal knowledge</span>
+          <span className="workspace-name">agentic rag / financial documents</span>
           <div className="topbar-links">
             <a href="/" className="topbar-link">
               Back to landing
@@ -50,14 +52,16 @@ export function TopBar({
         <span className={`badge ${apiHealthy ? "badge-green" : "badge-amber"}`}>
           {apiHealthy ? "API healthy" : "API degraded"}
         </span>
-        <button
-          className="btn-ghost topbar-upload"
-          onClick={onUploadClick}
-          type="button"
-        >
-          <UploadIcon />
-          {isUploading ? "Uploading..." : "+ Upload"}
-        </button>
+        {isAdmin ? (
+          <button
+            className="btn-ghost topbar-upload"
+            onClick={onUploadClick}
+            type="button"
+          >
+            <UploadIcon />
+            {isUploading ? "Uploading..." : "+ Upload"}
+          </button>
+        ) : null}
       </div>
     </header>
   );

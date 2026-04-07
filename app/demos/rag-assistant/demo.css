@@ -1036,6 +1036,45 @@ textarea {
   margin-bottom: 12px;
 }
 
+.rp-bullets {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rp-bullets li {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  padding-left: 14px;
+  position: relative;
+}
+
+.rp-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0.7;
+}
+
+.rp-powered {
+  margin-top: auto;
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+}
+
 .tech-item {
   display: flex;
   justify-content: space-between;
@@ -1134,16 +1173,42 @@ textarea {
 }
 
 .empty-title {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.5;
   font-weight: 500;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 
-.empty-copy {
-  margin-top: 10px;
-  color: var(--text-dim);
+.prompt-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
   max-width: 560px;
+}
+
+.prompt-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-md);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-family: var(--sans);
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s,
+    color 0.18s,
+    background 0.18s;
+}
+
+.prompt-card:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  color: var(--text);
+  background: rgba(245, 158, 11, 0.04);
 }
 
 .sr-only {
@@ -1235,5 +1300,9 @@ textarea {
   .workspace-name {
     word-break: break-word;
     white-space: normal;
+  }
+
+  .prompt-cards {
+    grid-template-columns: 1fr;
   }
 }

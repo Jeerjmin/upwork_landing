@@ -1,7 +1,4 @@
-import type {
-  DocumentSummary,
-  StatsResponse,
-} from "@/lib/rag-assistant/types";
+import type { DocumentSummary } from "@/lib/rag-assistant/types";
 
 interface SidebarProps {
   documents: DocumentSummary[];
@@ -9,8 +6,8 @@ interface SidebarProps {
   error: string | null;
   selectedDocumentId: string | null;
   onSelectDocument(documentId: string): void;
+  isAdmin: boolean;
   onUploadClick(): void;
-  totals?: StatsResponse["totals"];
 }
 
 export function Sidebar({
@@ -19,22 +16,24 @@ export function Sidebar({
   error,
   selectedDocumentId,
   onSelectDocument,
+  isAdmin,
   onUploadClick,
-  totals,
 }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar-section">
         <div className="sidebar-head">
-          <div className="sidebar-label">Indexed Documents</div>
-          <button
-            className="btn-ghost btn-ghost-sm"
-            onClick={onUploadClick}
-            type="button"
-          >
-            <UploadFileIcon />
-            Upload
-          </button>
+          <div className="sidebar-label">Documents</div>
+          {isAdmin ? (
+            <button
+              className="btn-ghost btn-ghost-sm"
+              onClick={onUploadClick}
+              type="button"
+            >
+              <UploadFileIcon />
+              Upload
+            </button>
+          ) : null}
         </div>
 
         <div className="doc-list">
@@ -64,7 +63,6 @@ export function Sidebar({
               </div>
               <div className="doc-info">
                 <div className="doc-name">{document.name}</div>
-                <div className="doc-meta">{formatDocumentMeta(document)}</div>
               </div>
               <div className="doc-status">
                 <div className={`dot-${document.status}`} />
@@ -73,64 +71,8 @@ export function Sidebar({
           ))}
         </div>
       </div>
-
-      <div className="sidebar-divider" />
-
-      <div className="stats-grid">
-        <div className="stat-box">
-          <div className="stat-val">{formatCompactNumber(totals?.totalChunks ?? 0)}</div>
-          <div className="stat-label">total chunks</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-val">{formatCompactNumber(totals?.totalDocuments ?? 0)}</div>
-          <div className="stat-label">documents</div>
-        </div>
-        <div className="stat-box">
-          <div className="stat-val">
-            {formatFileSize(totals?.totalSizeBytes ?? 0)}
-          </div>
-          <div className="stat-label">indexed size</div>
-        </div>
-      </div>
     </aside>
   );
-}
-
-function formatDocumentMeta(document: DocumentSummary): string {
-  if (document.status === "pending" || document.status === "processing") {
-    return "indexing…";
-  }
-
-  if (document.status === "failed") {
-    return document.error ?? "processing failed";
-  }
-
-  return `${document.chunkCount} chunks · ${formatFileSize(document.sizeBytes)}`;
-}
-
-function formatFileSize(sizeBytes: number): string {
-  if (sizeBytes <= 0) {
-    return "0B";
-  }
-
-  const units = ["B", "KB", "MB", "GB"];
-  let size = sizeBytes;
-  let unitIndex = 0;
-
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex += 1;
-  }
-
-  const precision = size >= 10 || unitIndex === 0 ? 0 : 1;
-  return `${size.toFixed(precision)}${units[unitIndex]}`;
-}
-
-function formatCompactNumber(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    notation: value >= 1000 ? "compact" : "standard",
-    maximumFractionDigits: 1,
-  }).format(value);
 }
 
 function fileTypeClass(fileName: string): string {
