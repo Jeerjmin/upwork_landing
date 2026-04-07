@@ -1,13 +1,15 @@
-import { CtaSection } from "@/components/CtaSection";
+// import { CtaSection } from "@/components/CtaSection";
 import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+// import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { ProblemCard, type ProblemCardProps } from "@/components/ProblemCard";
 import { ProofSection } from "@/components/ProofSection";
+import { RevealOnScroll } from "@/components/RevealOnScroll";
 import { TrustBar } from "@/components/TrustBar";
 
 const siteConfig = {
   upworkUrl: "https://www.upwork.com",
+  linkedinUrl: "https://www.linkedin.com/in/oleg-t-687078191/?skipRedirect=true",
   githubUrl: "https://github.com/your-username",
   email: "your@email.com",
   header: {
@@ -26,21 +28,15 @@ const siteConfig = {
       "I build production AI systems that automate document processing, answer your team's questions instantly, and qualify leads while you sleep. Not demos — working systems delivered in 1–2 weeks.",
     primaryCtaLabel: "See it working ↓",
     primaryCtaHref: "#demos",
-    secondaryCtaLabel: "My Upwork profile →",
+    secondaryCtaLabel: "My LinkedIn profile →",
   },
   trustBar: {
     items: [
       {
-        color: "green",
-        icon: "check",
-        title: "Senior backend engineer",
-        description: "Go · Node.js · AWS — 7+ years",
-      },
-      {
         color: "amber",
         icon: "bolt",
-        title: "Lamoda — 30M users",
-        description: "20M+ events/day at scale",
+        title: "Production engineer, 7+ years",
+        description: "Go · Node.js · AWS · tens-of-millions scale",
       },
       {
         color: "blue",
@@ -91,41 +87,41 @@ const siteConfig = {
           "Ask the AI in Slack or a chat UI. Searches your documents, answers in seconds, shows the exact source.",
         resultText: "Works with Notion, Drive, PDFs",
       },
-      {
-        colorVariant: "c3",
-        tag: "Lead qualification",
-        title: "Good leads go cold while you're busy with bad ones",
-        description:
-          "A lead messages on WhatsApp or fills a form. Your team responds hours later — if at all. By then they've moved on. I build an AI agent that responds in under a minute, scores the lead, updates your CRM, and only pings your team for the hot ones.",
-        demoUrl: "https://example.com/lead-qualification-demo",
-        githubUrl: "https://github.com/your-username/lead-qualification-demo",
-        beforeText:
-          "Lead submits form. Someone checks it 3 hours later. Manual reply. Forgets to update HubSpot. Hot lead goes cold.",
-        afterText:
-          "Lead arrives → AI responds in <60s → scored + logged in CRM → team gets a Slack ping only for hot leads.",
-        resultText: "Works with WhatsApp, HubSpot, Airtable",
-      },
+      // {
+      //   colorVariant: "c3",
+      //   tag: "Lead qualification",
+      //   title: "Good leads go cold while you're busy with bad ones",
+      //   description:
+      //     "A lead messages on WhatsApp or fills a form. Your team responds hours later — if at all. By then they've moved on. I build an AI agent that responds in under a minute, scores the lead, updates your CRM, and only pings your team for the hot ones.",
+      //   demoUrl: "https://example.com/lead-qualification-demo",
+      //   githubUrl: "https://github.com/your-username/lead-qualification-demo",
+      //   beforeText:
+      //     "Lead submits form. Someone checks it 3 hours later. Manual reply. Forgets to update HubSpot. Hot lead goes cold.",
+      //   afterText:
+      //     "Lead arrives → AI responds in <60s → scored + logged in CRM → team gets a Slack ping only for hot leads.",
+      //   resultText: "Works with WhatsApp, HubSpot, Airtable",
+      // },
     ] satisfies Omit<ProblemCardProps, "labels">[],
   },
   proof: {
-    quoteBefore: "The same engineering discipline I used to process ",
-    quoteEmphasis: "20 million events a day at Lamoda",
-    quoteAfter: " — now applied to your business.",
-    sourceLabel: "Background ·",
-    sourceText: "Lamoda, Eastern Europe's largest fashion e-commerce · 30M users",
+    quoteBefore: "SQS, DLQ, idempotent retry, audit logs — ",
+    quoteEmphasis: "from day one.",
+    quoteAfter: " Not as an afterthought when things break in production.",
+    sourceLabel: "7+ years ·",
+    sourceText: "Eastern Europe's largest fashion e-commerce",
     metrics: [
       {
-        label: "Events/day at Lamoda",
-        value: "20,000,000+",
+        label: "Scale",
+        value: "tens-of-millions of users",
         valueClassName: "hi",
       },
       {
-        label: "Engineering experience",
-        value: "7+ years",
+        label: "Infrastructure",
+        value: "Lambda · S3 Vectors · CDK",
       },
       {
-        label: "Core stack",
-        value: "Go · Node.js · AWS",
+        label: "Languages",
+        value: "Go · Node.js · PostgreSQL",
       },
       {
         label: "Ready to deploy",
@@ -158,13 +154,6 @@ export default function Home() {
 
   return (
     <>
-      <Header
-        logoPrefix={siteConfig.header.logoPrefix}
-        logoHighlight={siteConfig.header.logoHighlight}
-        logoSuffix={siteConfig.header.logoSuffix}
-        upworkLabel={siteConfig.header.upworkLabel}
-        upworkUrl={siteConfig.upworkUrl}
-      />
       <Hero
         eyebrow={siteConfig.hero.eyebrow}
         titleLine1={siteConfig.hero.titleLine1}
@@ -175,31 +164,10 @@ export default function Home() {
         primaryCtaLabel={siteConfig.hero.primaryCtaLabel}
         primaryCtaHref={siteConfig.hero.primaryCtaHref}
         secondaryCtaLabel={siteConfig.hero.secondaryCtaLabel}
-        secondaryCtaHref={siteConfig.upworkUrl}
-      />
-      <TrustBar items={siteConfig.trustBar.items} />
-      <section id="demos">
-        <div className="wrap">
-          <div className="section-title">
-            <div className="section-label">{siteConfig.demos.sectionLabel}</div>
-            <h2>
-              {siteConfig.demos.titleLine1}
-              <br />
-              <em>{siteConfig.demos.titleEmphasis}</em>
-            </h2>
-          </div>
-
-          <div className="problems">
-            {siteConfig.demos.cards.map((card) => (
-              <ProblemCard
-                key={card.title}
-                {...card}
-                labels={siteConfig.demos.cardLabels}
-              />
-            ))}
-          </div>
-
+        secondaryCtaHref={siteConfig.linkedinUrl}
+        sidePanel={
           <ProofSection
+            variant="embedded"
             quoteBefore={siteConfig.proof.quoteBefore}
             quoteEmphasis={siteConfig.proof.quoteEmphasis}
             quoteAfter={siteConfig.proof.quoteAfter}
@@ -207,8 +175,35 @@ export default function Home() {
             sourceText={siteConfig.proof.sourceText}
             metrics={siteConfig.proof.metrics}
           />
+        }
+      />
+      <TrustBar items={siteConfig.trustBar.items} />
+      <section id="demos">
+        <div className="wrap">
+          <RevealOnScroll className="section-title reveal">
+            <div>
+              <div className="section-label">{siteConfig.demos.sectionLabel}</div>
+              <h2>
+                <em>{siteConfig.demos.titleEmphasis}</em>
+              </h2>
+            </div>
+          </RevealOnScroll>
 
-          <CtaSection
+          <div className="problems">
+            {siteConfig.demos.cards.map((card, i) => (
+              <RevealOnScroll
+                key={card.title}
+                className={`reveal reveal-d${i + 1}`}
+              >
+                <ProblemCard
+                  {...card}
+                  labels={siteConfig.demos.cardLabels}
+                />
+              </RevealOnScroll>
+            ))}
+          </div>
+
+          {/* <CtaSection
             titleLine1={siteConfig.cta.titleLine1}
             titleLine2Prefix={siteConfig.cta.titleLine2Prefix}
             titleEmphasis={siteConfig.cta.titleEmphasis}
@@ -218,7 +213,7 @@ export default function Home() {
             buttonLabel={siteConfig.cta.buttonLabel}
             buttonUrl={siteConfig.upworkUrl}
             note={siteConfig.cta.note}
-          />
+          /> */}
         </div>
       </section>
       <Footer note={siteConfig.footer.note} links={footerLinks} />

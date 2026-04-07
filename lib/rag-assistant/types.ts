@@ -47,6 +47,22 @@ export interface IngestAcceptedResponse {
   status: "queued";
 }
 
+export interface UploadPart {
+  partNumber: number;
+  url: string;
+}
+
+export interface InitiateUploadResponse {
+  uploadId: string;
+  documentId: string;
+  s3Key: string;
+  contentType: string;
+  partSizeBytes: number;
+  partCount: number;
+  expiresInSeconds: number;
+  parts: UploadPart[];
+}
+
 export interface DocumentsResponse {
   documents: DocumentSummary[];
   total: number;
@@ -75,6 +91,7 @@ export interface ChatMessage {
   id: string;
   role: ChatRole;
   content: string;
+  pendingContent?: string;
   createdAt: string;
   status?: "ready" | "loading" | "error";
   isStreaming?: boolean;

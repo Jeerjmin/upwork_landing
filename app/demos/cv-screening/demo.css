@@ -888,6 +888,50 @@ body {
   animation: cv-fade-in 0.4s ease;
 }
 
+.cv-screen-transition {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.cv-screen-transition-results {
+  position: relative;
+  z-index: 0;
+  animation: cv-results-rise 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cv-screen-transition-results .cv-result-header {
+  animation: cv-section-reveal 0.72s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cv-screen-transition-results .cv-results-body {
+  animation: cv-section-reveal 0.82s 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cv-screen-transition-results .cv-results-footer {
+  animation: cv-section-reveal 0.62s 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cv-screen-transition-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: auto;
+  pointer-events: none;
+  animation: cv-loading-fade-out 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.cv-screen-transition-loading .cv-loading-file,
+.cv-screen-transition-loading .cv-loading-label,
+.cv-screen-transition-loading .cv-progress-track,
+.cv-screen-transition-loading .cv-steps-list {
+  animation: cv-loading-top-out 0.52s ease forwards;
+}
+
+.cv-screen-transition-loading .cv-loading-preview-grid {
+  animation: cv-loading-preview-out 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 @keyframes cv-pulse {
   0%,
   100% {
@@ -909,6 +953,64 @@ body {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cv-loading-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes cv-loading-top-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes cv-loading-preview-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.992);
+  }
+}
+
+@keyframes cv-results-rise {
+  from {
+    opacity: 0.72;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cv-section-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
 
   to {

@@ -31,6 +31,7 @@ export type RagChatAction =
       event: Extract<WsServerMessage, { type: "agent_search" }>;
     }
   | { type: "chunk_received"; text: string }
+  | { type: "stream_flushed" }
   | { type: "done_received"; event: Extract<WsServerMessage, { type: "done" }> }
   | {
       type: "error_received";
@@ -62,6 +63,7 @@ export function ragChatReducer(
             id: action.assistantMessageId,
             role: "assistant",
             content: "",
+            pendingContent: "",
             createdAt: action.createdAt,
             status: "loading",
             isStreaming: true,
@@ -97,7 +99,23 @@ export function ragChatReducer(
           state.activeAssistantMessageId,
           (message) => ({
             ...message,
-            content: message.content + action.text,
+            pendingContent: `${message.pendingContent ?? ""}${action.text}`,
+            status: message.content ? "ready" : message.status,
+            isStreaming: true,
+            isError: false,
+            trace: state.activeTrace,
+          }),
+        ),
+      };
+
+    case "stream_flushed":
+      return {
+        ...state,
+        messages: patchActiveAssistantMessage(
+          state.messages,
+          state.activeAssistantMessageId,
+          (message) => ({
+            ...flushPendingMessageContent(message),
             status: "ready",
             isStreaming: true,
             isError: false,
@@ -117,7 +135,7 @@ export function ragChatReducer(
           state.messages,
           state.activeAssistantMessageId,
           (message) => ({
-            ...message,
+            ...flushPendingMessageContent(message),
             status: "ready",
             isStreaming: false,
             isError: false,
@@ -139,19 +157,23 @@ export function ragChatReducer(
         messages: patchActiveAssistantMessage(
           state.messages,
           state.activeAssistantMessageId,
-          (message) => ({
-            ...message,
-            content: buildErrorContent(
-              action.event.message,
-              action.event.partialText ?? message.content,
-            ),
-            status: "error",
-            isStreaming: false,
-            isError: true,
-            confidence: 0,
-            latencyMs: 0,
-            trace: state.activeTrace,
-          }),
+          (message) => {
+            const flushedMessage = flushPendingMessageContent(message);
+
+            return {
+              ...flushedMessage,
+              content: buildErrorContent(
+                action.event.message,
+                action.event.partialText ?? flushedMessage.content,
+              ),
+              status: "error",
+              isStreaming: false,
+              isError: true,
+              confidence: 0,
+              latencyMs: 0,
+              trace: state.activeTrace,
+            };
+          },
         ),
       };
 
@@ -164,19 +186,23 @@ export function ragChatReducer(
         messages: patchActiveAssistantMessage(
           state.messages,
           state.activeAssistantMessageId,
-          (message) => ({
-            ...message,
-            content: buildErrorContent(
-              "Connection lost while waiting for the response. Please try again.",
-              message.content,
-            ),
-            status: "error",
-            isStreaming: false,
-            isError: true,
-            confidence: 0,
-            latencyMs: 0,
-            trace: state.activeTrace,
-          }),
+          (message) => {
+            const flushedMessage = flushPendingMessageContent(message);
+
+            return {
+              ...flushedMessage,
+              content: buildErrorContent(
+                "Connection lost while waiting for the response. Please try again.",
+                flushedMessage.content,
+              ),
+              status: "error",
+              isStreaming: false,
+              isError: true,
+              confidence: 0,
+              latencyMs: 0,
+              trace: state.activeTrace,
+            };
+          },
         ),
       };
 
@@ -214,6 +240,22 @@ function patchActiveAssistantMessage(
   return messages.map((message) =>
     message.id === activeAssistantMessageId ? updater(message) : message,
   );
+}
+
+function flushPendingMessageContent(message: ChatMessage): ChatMessage {
+  const pendingContent = message.pendingContent ?? "";
+
+  if (!pendingContent) {
+    return message.pendingContent === undefined
+      ? message
+      : { ...message, pendingContent: "" };
+  }
+
+  return {
+    ...message,
+    content: `${message.content}${pendingContent}`,
+    pendingContent: "",
+  };
 }
 
 function buildErrorContent(message: string, partialText?: string): string {

@@ -17,6 +17,7 @@ interface ResultsScreenProps {
   jobDescription: string;
   acceptedAt: string | null;
   onReset: () => void;
+  animateOnMount?: boolean;
 }
 
 const SCORE_RING_RADIUS = 36;
@@ -28,12 +29,14 @@ export function ResultsScreen({
   jobDescription,
   acceptedAt,
   onReset,
+  animateOnMount = true,
 }: ResultsScreenProps) {
   const jobTitle = extractJobTitle(jobDescription);
   const workModel = extractWorkModel(jobDescription);
   const score = Math.max(0, Math.min(100, result.fit.overall));
   const highlightFlags = result.flags.filter((flag) => flag.severity === "positive");
   const concernFlags = result.flags.filter((flag) => flag.severity !== "positive");
+  const [shouldAnimateOnMount] = useState(animateOnMount);
   const [scoreOffset, setScoreOffset] = useState(SCORE_RING_CIRCUMFERENCE);
 
   useEffect(() => {
@@ -47,7 +50,9 @@ export function ResultsScreen({
   }, [score]);
 
   return (
-    <div className="cv-results-screen cv-fade-in">
+    <div
+      className={`cv-results-screen ${shouldAnimateOnMount ? "cv-fade-in" : ""}`}
+    >
       <div className="cv-result-header">
         <div className="cv-score-ring-wrap">
           <svg className="cv-score-ring" viewBox="0 0 84 84" aria-hidden="true">

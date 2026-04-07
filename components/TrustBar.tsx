@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 type TrustIcon = "check" | "bolt" | "clock";
 type TrustColor = "green" | "amber" | "blue";
 
@@ -59,8 +63,28 @@ function TrustBarIcon({ icon }: { icon: TrustIcon }) {
 }
 
 export function TrustBar({ items }: TrustBarProps) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="trust-bar">
+    <header ref={ref} className="trust-bar reveal">
       <div className="wrap">
         <div className="trust-inner">
           {items.map((item) => (
@@ -76,6 +100,6 @@ export function TrustBar({ items }: TrustBarProps) {
           ))}
         </div>
       </div>
-    </div>
+    </header>
   );
 }

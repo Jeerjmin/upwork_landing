@@ -110,7 +110,41 @@ header {
 
 .hero {
   padding: 88px 0 72px;
-  animation: fadeUp 0.6s ease both;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.hero-left {
+  min-width: 0;
+}
+
+.hero-right {
+  position: relative;
+  min-width: 0;
+  animation: fadeRight 0.7s 0.3s ease both;
+}
+
+.hero-right::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(239, 159, 39, 0.07) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-right .proof-card {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-eyebrow {
@@ -120,9 +154,10 @@ header {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 22px;
+  animation: fadeUp 0.5s 0.05s ease both;
 }
 
-h1 {
+.hero h1 {
   font-family: var(--serif);
   font-size: 54px;
   font-weight: 400;
@@ -130,6 +165,7 @@ h1 {
   letter-spacing: -0.02em;
   margin-bottom: 28px;
   max-width: 640px;
+  animation: fadeUp 0.6s 0.15s ease both;
 }
 
 h1 em {
@@ -143,6 +179,7 @@ h1 em {
   line-height: 1.7;
   max-width: 520px;
   margin-bottom: 40px;
+  animation: fadeUp 0.6s 0.28s ease both;
 }
 
 .hero-ctas {
@@ -150,12 +187,12 @@ h1 em {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.38s ease both;
 }
 
 .btn-primary {
   font-family: var(--mono);
   font-size: 13px;
-  background: var(--amber);
   color: #1a1200;
   border: none;
   border-radius: 8px;
@@ -167,11 +204,21 @@ h1 em {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  background: linear-gradient(
+    105deg,
+    var(--amber) 40%,
+    #fce08a 50%,
+    var(--amber) 60%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3.5s linear infinite;
+  animation-delay: 1.2s;
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  opacity: 0.92;
+  transform: translateY(-2px);
+  animation-play-state: paused;
 }
 
 .btn-secondary {
@@ -194,7 +241,6 @@ h1 em {
   border-bottom: 1px solid var(--border);
   padding: 18px 0;
   margin-bottom: 80px;
-  animation: fadeUp 0.6s 0.1s ease both;
 }
 
 .trust-inner {
@@ -310,16 +356,8 @@ h2 em {
   --ad: var(--blue-dim);
 }
 
-.prob-card:nth-child(1) {
-  animation: fadeUp 0.5s 0.15s ease both;
-}
-
-.prob-card:nth-child(2) {
-  animation: fadeUp 0.5s 0.25s ease both;
-}
-
-.prob-card:nth-child(3) {
-  animation: fadeUp 0.5s 0.35s ease both;
+.problems > .reveal {
+  width: 100%;
 }
 
 .prob-inner {
@@ -491,6 +529,7 @@ h2 em {
   border-radius: 20px;
   padding: 5px 12px;
   margin-top: 4px;
+  animation: pillPulse 3s ease-in-out infinite;
 }
 
 .proof-section {
@@ -506,6 +545,14 @@ h2 em {
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: start;
+}
+
+.proof-card--embedded {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  grid-template-columns: unset;
 }
 
 .proof-quote {
@@ -548,6 +595,12 @@ h2 em {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.metric-row:hover {
+  background: var(--bg2);
+  border-color: var(--border2);
 }
 
 .metric-label {
@@ -562,6 +615,7 @@ h2 em {
   font-size: 14px;
   color: var(--text);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .metric-val.hi {
@@ -570,6 +624,31 @@ h2 em {
 
 .metric-val.am {
   color: var(--amber);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-d1 {
+  transition-delay: 0.05s;
+}
+
+.reveal-d2 {
+  transition-delay: 0.15s;
+}
+
+.reveal-d3 {
+  transition-delay: 0.25s;
 }
 
 .cta-section {
@@ -696,9 +775,47 @@ footer {
   }
 }
 
+@keyframes fadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes pillPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
+}
+
 @media (max-width: 680px) {
-  h1 {
+  .hero h1 {
     font-size: 38px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
   }
 
   .prob-inner {
@@ -710,7 +827,7 @@ footer {
     border-bottom: 1px solid var(--border);
   }
 
-  .proof-card {
+  .proof-card:not(.proof-card--embedded) {
     grid-template-columns: 1fr;
     gap: 28px;
   }

@@ -2,8 +2,12 @@ import type {
   ChatResponse,
   DocumentsResponse,
   IngestAcceptedResponse,
+  InitiateUploadResponse,
   StatsResponse,
+  UploadPart,
 } from "@/lib/rag-assistant/types";
+
+const MAX_CONCURRENT_UPLOADS = 4;
 
 const CHAT_BASE_URL = normalizeBaseUrl(
   process.env.NEXT_PUBLIC_CHAT_API_URL ?? process.env.NEXT_PUBLIC_API_URL,
@@ -39,19 +43,32 @@ export async function fetchStats(): Promise<StatsResponse> {
 export async function uploadDocument(
   file: File,
 ): Promise<IngestAcceptedResponse> {
-  const arrayBuffer = await file.arrayBuffer();
-  const contentBase64 = encodeBase64(arrayBuffer);
+  const contentType = file.type || inferContentType(file.name);
+  const upload = await request<InitiateUploadResponse>(
+    `${INGEST_BASE_URL}/ingest/uploads/initiate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        documentName: file.name,
+        sizeBytes: file.size,
+        contentType,
+        source: "webhook",
+      }),
+    },
+  );
 
-  return request<IngestAcceptedResponse>(`${INGEST_BASE_URL}/ingest`, {
+  await uploadDocumentParts(file, upload.parts, upload.partSizeBytes);
+
+  return request<IngestAcceptedResponse>(`${INGEST_BASE_URL}/ingest/uploads/complete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      documentName: file.name,
-      contentBase64,
-      contentType: file.type || inferContentType(file.name),
-      source: "webhook",
+      uploadId: upload.uploadId,
     }),
   });
 }
@@ -101,15 +118,42 @@ async function safeJson(
   }
 }
 
-function encodeBase64(buffer: ArrayBuffer): string {
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-
-  for (let index = 0; index < bytes.length; index += 1) {
-    binary += String.fromCharCode(bytes[index] ?? 0);
+async function uploadDocumentParts(
+  file: File,
+  parts: UploadPart[],
+  partSizeBytes: number,
+): Promise<void> {
+  if (partSizeBytes <= 0) {
+    throw new Error("Upload part size must be greater than zero");
   }
 
-  return btoa(binary);
+  const orderedParts = [...parts].sort(
+    (left, right) => left.partNumber - right.partNumber,
+  );
+
+  for (let index = 0; index < orderedParts.length; index += MAX_CONCURRENT_UPLOADS) {
+    const batch = orderedParts.slice(index, index + MAX_CONCURRENT_UPLOADS);
+    await Promise.all(
+      batch.map((part) => uploadPart(file, part, partSizeBytes)),
+    );
+  }
+}
+
+async function uploadPart(
+  file: File,
+  part: UploadPart,
+  partSizeBytes: number,
+): Promise<void> {
+  const start = (part.partNumber - 1) * partSizeBytes;
+  const end = Math.min(start + partSizeBytes, file.size);
+  const response = await fetch(part.url, {
+    method: "PUT",
+    body: file.slice(start, end),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to upload document part ${part.partNumber}`);
+  }
 }
 
 function inferContentType(fileName: string): string {
