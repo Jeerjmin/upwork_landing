@@ -44,7 +44,7 @@ export function Message({ message, onRetry }: MessageProps) {
           ) : null}
           {assistantStreaming ? <span className="badge badge-blue">streaming</span> : null}
           {assistantLoading && !assistantStreaming ? (
-            <span className="badge badge-blue">searching</span>
+            <span className="badge badge-blue">thinking</span>
           ) : null}
           {assistantError ? <span className="badge badge-red">error</span> : null}
         </div>

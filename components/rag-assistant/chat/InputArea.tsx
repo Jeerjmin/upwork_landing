@@ -31,7 +31,7 @@ export function InputArea({ isLoading, onSend }: InputAreaProps) {
         <textarea
           ref={textareaRef}
           className="input-field"
-          placeholder="Ask anything about your knowledge base…"
+          placeholder="Ask a question…"
           rows={1}
           value={value}
           onChange={(event) => {

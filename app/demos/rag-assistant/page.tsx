@@ -1,7 +1,8 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { InputArea } from "@/components/rag-assistant/chat/InputArea";
 import { MessageList } from "@/components/rag-assistant/chat/MessageList";
@@ -15,7 +16,16 @@ import { useWebSocket } from "@/hooks/rag-assistant/useWebSocket";
 import { uploadDocument } from "@/lib/rag-assistant/api";
 
 export default function RagAssistantPage() {
+  return (
+    <Suspense fallback={<div className="app-shell" />}>
+      <RagAssistantPageInner />
+    </Suspense>
+  );
+}
+
+function RagAssistantPageInner() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
   const { isConnected } = useWebSocket();
   const { messages, isStreaming, sendMessage } = useChat();
   const {
@@ -31,6 +41,10 @@ export default function RagAssistantPage() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const adminParam = searchParams.get("admin");
+  const adminToken = process.env.NEXT_PUBLIC_RAG_ASSISTANT_ADMIN_TOKEN;
+  const isAdmin = Boolean(adminToken) && adminParam === adminToken;
 
   const embeddingModel =
     documents.find((document) => document.embeddingModel)?.embeddingModel ??
@@ -83,6 +97,7 @@ export default function RagAssistantPage() {
         apiHealthy={apiHealthy}
         isWsConnected={isConnected}
         isUploading={isUploading}
+        isAdmin={isAdmin}
         onUploadClick={() => fileInputRef.current?.click()}
       />
 
@@ -93,12 +108,12 @@ export default function RagAssistantPage() {
           error={documentsError ?? uploadError}
           selectedDocumentId={selectedDocumentId}
           onSelectDocument={setSelectedDocumentId}
+          isAdmin={isAdmin}
           onUploadClick={() => fileInputRef.current?.click()}
-          totals={stats?.totals}
         />
 
         <div className="chat-area">
-          <MessageList messages={messages} onRetry={sendMessage} />
+          <MessageList messages={messages} onRetry={sendMessage} onSend={sendMessage} />
           <InputArea onSend={sendMessage} isLoading={isStreaming} />
         </div>
 

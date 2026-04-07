@@ -6,12 +6,20 @@ import { Message } from "@/components/rag-assistant/chat/Message";
 import { isNearBottom } from "@/lib/rag-assistant/scroll";
 import type { ChatMessage } from "@/lib/rag-assistant/types";
 
+const PROMPT_SUGGESTIONS = [
+  "Walk me through the key risk factors from the annual report",
+  "Pull the exact net revenue figure for Q3 2025 and cite the source",
+  "Cross-check operating margins across all quarterly reports",
+  "What documents do you have access to and what can you extract?",
+];
+
 interface MessageListProps {
   messages: ChatMessage[];
   onRetry?: (text: string) => void | Promise<void>;
+  onSend?: (text: string) => void | Promise<void>;
 }
 
-export function MessageList({ messages, onRetry }: MessageListProps) {
+export function MessageList({ messages, onRetry, onSend }: MessageListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFollowing, setIsFollowing] = useState(true);
   const [hasHiddenUpdate, setHasHiddenUpdate] = useState(false);
@@ -107,10 +115,22 @@ export function MessageList({ messages, onRetry }: MessageListProps) {
                   assistant
                   <span className="ts">ready</span>
                 </div>
-                <div className="empty-title">Ask anything about your knowledge base</div>
-                <div className="empty-copy">
-                  I will search indexed chunks, answer with citations, and keep the
-                  conversation history in sync with the backend.
+                <div className="empty-title">Agentic RAG over your financial docs</div>
+                <div className="prompt-cards">
+                  {PROMPT_SUGGESTIONS.map((prompt) => (
+                    <button
+                      key={prompt}
+                      className="prompt-card"
+                      type="button"
+                      onClick={() => {
+                        if (onSend) {
+                          void onSend(prompt);
+                        }
+                      }}
+                    >
+                      {prompt}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
